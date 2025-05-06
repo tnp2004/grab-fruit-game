@@ -1,4 +1,14 @@
 use bevy::prelude::*;
+use player::PlayerPlugin;
+use system::SystemPlugin;
+
+mod player;
+mod components;
+mod system;
+
+const TIME_STEP: f32 = 1./60.;
+const BASE_SPEED: f32 = 500.;
+const GAME_TITLE: &'static str = "Grabfruit";
 
 #[derive(Resource)]
 struct WindowSize {
@@ -37,13 +47,14 @@ fn main() {
     App::new()
         .add_plugins(DefaultPlugins.set(WindowPlugin {
             primary_window: Some(Window {
-                title: "Grabfruit".to_string(),
+                title: GAME_TITLE.to_string(),
                 resolution: (600., 700.).into(),
                 resizable: false,
                 ..default()
             }),
             ..default()
         }))
-
+        .add_plugins(SystemPlugin)
+        .add_plugins(PlayerPlugin)
         .run();
 }
