@@ -13,16 +13,27 @@ use bevy::{
 use bevy::prelude::*;
 
 use crate::{
-    BASE_SPEED, GameColors, GameShapes, TIME_STEP, WindowSize,
     components::{Movable, Player, Velocity},
+    resource::{BASE_SPEED, GameAssets, GameColors, GameShapes, TIME_STEP, WindowSize},
 };
 pub struct SystemPlugin;
 
 impl Plugin for SystemPlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.add_systems(Startup, setup_system);
+        app.add_systems(Startup, (load_game_assets, setup_system));
         app.add_systems(Update, movement_system);
     }
+}
+
+fn load_game_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
+    let game_assets = GameAssets {
+        player: asset_server.load("player/basket.png"),
+        apple: asset_server.load("enemy/apple.png"),
+        durian: asset_server.load("enemy/durian.png"),
+        orange: asset_server.load("enemy/orange.png"),
+    };
+
+    commands.insert_resource(game_assets);
 }
 
 fn setup_system(
@@ -51,14 +62,15 @@ fn setup_system(
         Bloom::default(),
     ));
 
-    let game_shapes: GameShapes = GameShapes {
-        player_body: meshes.add(Rectangle::new(20., 10.)),
+    let game_shapes = GameShapes {
+        player_body: meshes.add(Rectangle::new(60., 30.)),
         fruit_body: meshes.add(Circle::new(20.)),
     };
 
     commands.insert_resource(game_shapes);
 
     let game_colors = GameColors {
+        background: materials.add(Color::srgb(0., 0., 0.)),
         player_body: materials.add(Color::srgb(1., 1., 1.)),
         fruit_body: materials.add(Color::srgb(1., 0., 0.)),
     };

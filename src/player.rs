@@ -1,7 +1,8 @@
 use bevy::prelude::*;
 
 use crate::{
-    components::{Movable, Player, Velocity}, GameColors, GameShapes, WindowSize
+    components::{Movable, Player, Velocity},
+    resource::{GameAssets, GameColors, GameShapes, WindowSize},
 };
 pub struct PlayerPlugin;
 
@@ -17,20 +18,25 @@ fn spawn_player_system(
     window_size: Res<WindowSize>,
     game_colors: Res<GameColors>,
     game_shapes: Res<GameShapes>,
+    game_assets: Res<GameAssets>,
 ) {
     let player = commands
         .spawn((
             Mesh2d(game_shapes.player_body.clone()),
             MeshMaterial2d(game_colors.player_body.clone()),
+            Sprite {
+                image: game_assets.player.clone(),
+                image_mode: SpriteImageMode::Auto,
+                ..default()
+            },
+            Transform::from_xyz(0., -window_size.height / 2. + 100., 0.),
         ))
         .insert(Player)
         .insert(Velocity { x: 0., y: 0. })
         .insert(Movable { auto_despawn: true })
         .id();
 
-    commands
-    .entity(player)
-    .insert(Transform::from_xyz(0., -window_size.height/2. + 100., 0.));
+    commands.entity(player);
 }
 
 fn player_keyboard_event_system(
