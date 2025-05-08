@@ -14,13 +14,15 @@ use bevy::prelude::*;
 
 use crate::{
     components::{Movable, Player, Velocity},
-    resource::{BASE_SPEED, GameAssets, GameColors, GameShapes, TIME_STEP, WindowSize},
+    resource::{
+        BASE_SPEED, EnemySpawnTimer, GameAssets, GameMaterial, GameShapes, TIME_STEP, WindowSize,
+    },
 };
 pub struct SystemPlugin;
 
 impl Plugin for SystemPlugin {
     fn build(&self, app: &mut bevy::app::App) {
-        app.add_systems(Startup, (load_game_assets, setup_system));
+        app.add_systems(Startup, (load_game_assets, setup_system).chain());
         app.add_systems(Update, movement_system);
     }
 }
@@ -41,6 +43,7 @@ fn setup_system(
     mut primary_window: Query<&mut Window, With<PrimaryWindow>>,
     mut meshes: ResMut<Assets<Mesh>>,
     mut materials: ResMut<Assets<ColorMaterial>>,
+    game_assets: Res<GameAssets>,
 ) {
     if let Ok(mut window) = primary_window.single_mut() {
         window.position = WindowPosition::Centered(MonitorSelection::Current);
@@ -63,19 +66,26 @@ fn setup_system(
     ));
 
     let game_shapes = GameShapes {
-        player_body: meshes.add(Rectangle::new(60., 30.)),
-        fruit_body: meshes.add(Circle::new(20.)),
+        player_body: meshes.add(Rectangle::new(60., 60.)),
+        enemy_body: meshes.add(Circle::new(30.)),
     };
 
     commands.insert_resource(game_shapes);
 
-    let game_colors = GameColors {
-        background: materials.add(Color::srgb(0., 0., 0.)),
-        player_body: materials.add(Color::srgb(1., 1., 1.)),
-        fruit_body: materials.add(Color::srgb(1., 0., 0.)),
+    let game_material = GameMaterial {
+        player_body: materials.add(ColorMaterial {
+            texture: Some(game_assets.player.clone()),
+            ..default()
+        }),
+        enemy_body: materials.add(ColorMaterial {
+            texture: Some(game_assets.apple.clone()),
+            ..default()
+        }),
     };
 
-    commands.insert_resource(game_colors);
+    commands.insert_resource(game_material);
+
+    commands.insert_resource(EnemySpawnTimer::default());
 }
 
 fn movement_system(

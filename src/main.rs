@@ -1,5 +1,5 @@
 use bevy::prelude::*;
-use grabfruit::{player::PlayerPlugin, resource::GAME_TITLE, system::SystemPlugin};
+use grabfruit::{enemy::EnemyPlugin, player::PlayerPlugin, resource::GAME_TITLE, system::SystemPlugin};
 
 fn main() {
     App::new()
@@ -14,5 +14,6 @@ fn main() {
         }))
         .add_plugins(SystemPlugin)
         .add_plugins(PlayerPlugin)
+        .add_plugins(EnemyPlugin)
         .run();
 }

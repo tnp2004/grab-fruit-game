@@ -4,7 +4,7 @@ use bevy::ecs::component::Component;
 pub struct Player;
 
 #[derive(Component)]
-pub struct Fruit;
+pub struct Enemy;
 
 #[derive(Component)]
 pub struct Velocity {

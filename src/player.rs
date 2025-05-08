@@ -2,7 +2,7 @@ use bevy::prelude::*;
 
 use crate::{
     components::{Movable, Player, Velocity},
-    resource::{GameAssets, GameColors, GameShapes, WindowSize},
+    resource::{GameAssets, GameMaterial, GameShapes, WindowSize},
 };
 pub struct PlayerPlugin;
 
@@ -16,20 +16,14 @@ impl Plugin for PlayerPlugin {
 fn spawn_player_system(
     mut commands: Commands,
     window_size: Res<WindowSize>,
-    game_colors: Res<GameColors>,
+    game_material: Res<GameMaterial>,
     game_shapes: Res<GameShapes>,
-    game_assets: Res<GameAssets>,
 ) {
     let player = commands
         .spawn((
             Mesh2d(game_shapes.player_body.clone()),
-            MeshMaterial2d(game_colors.player_body.clone()),
-            Sprite {
-                image: game_assets.player.clone(),
-                image_mode: SpriteImageMode::Auto,
-                ..default()
-            },
-            Transform::from_xyz(0., -window_size.height / 2. + 100., 0.),
+            MeshMaterial2d(game_material.player_body.clone()),
+            Transform::from_xyz(0., -window_size.height / 2. + 100., 10.),
         ))
         .insert(Player)
         .insert(Velocity { x: 0., y: 0. })
