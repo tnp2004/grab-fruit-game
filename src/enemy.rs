@@ -30,7 +30,7 @@ fn spawn_enemy_system(
         let enemy = commands
             .spawn((
                 Mesh2d(game_shapes.enemy_body.clone()),
-                MeshMaterial2d(random_enemy_mesh(game_material)),
+                MeshMaterial2d(random_enemy_mesh(game_material).unwrap()),
                 Transform::from_xyz(
                     rng.random_range(-window_width_half + 50.0..window_width_half - 50.),
                     window_size.height / 2.,
@@ -46,15 +46,13 @@ fn spawn_enemy_system(
     }
 }
 
-fn random_enemy_mesh(game_material: Res<GameMaterial>) -> Handle<ColorMaterial> {
+fn random_enemy_mesh(game_material: Res<GameMaterial>) -> Option<Handle<ColorMaterial>> {
     let mut rng: ThreadRng = rng();
 
-    let enemy_mesh_rng = match rng.random_range(0..3) {
-        0 => game_material.apple.clone(),
-        1 => game_material.orange.clone(),
-        2 => game_material.durian.clone(),
-        _ => panic!("error random enemy"),
-    };
-
-    enemy_mesh_rng
+    match rng.random_range(0..3) {
+        0 => Some(game_material.apple.clone()),
+        1 => Some(game_material.orange.clone()),
+        2 => Some(game_material.durian.clone()),
+        _ => None,
+    }
 }
