@@ -73,12 +73,20 @@ fn setup_system(
     commands.insert_resource(game_shapes);
 
     let game_material = GameMaterial {
-        player_body: materials.add(ColorMaterial {
+        player: materials.add(ColorMaterial {
             texture: Some(game_assets.player.clone()),
             ..default()
         }),
-        enemy_body: materials.add(ColorMaterial {
+        apple: materials.add(ColorMaterial {
             texture: Some(game_assets.apple.clone()),
+            ..default()
+        }),
+        orange: materials.add(ColorMaterial {
+            texture: Some(game_assets.orange.clone()),
+            ..default()
+        }),
+        durian: materials.add(ColorMaterial {
+            texture: Some(game_assets.durian.clone()),
             ..default()
         }),
     };

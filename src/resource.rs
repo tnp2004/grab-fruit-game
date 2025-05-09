@@ -21,11 +21,11 @@ pub struct GameShapes {
 
 #[derive(Resource)]
 pub struct GameMaterial {
-    // Player
-    pub player_body: Handle<ColorMaterial>,
+    pub player: Handle<ColorMaterial>,
 
-    // Enemy
-    pub enemy_body: Handle<ColorMaterial>,
+    pub apple: Handle<ColorMaterial>,
+    pub orange: Handle<ColorMaterial>,
+    pub durian: Handle<ColorMaterial>,
 }
 
 #[derive(Resource)]
