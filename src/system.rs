@@ -1,23 +1,18 @@
 use std::path::Path;
 
 use bevy::{
-    app::{Plugin, Startup},
-    asset::{AssetPath, Assets},
-    core_pipeline::{bloom::Bloom, tonemapping::Tonemapping},
-    ecs::{
+    app::{Plugin, Startup}, asset::{AssetPath, Assets}, core_pipeline::{bloom::Bloom, tonemapping::Tonemapping}, ecs::{
         query::With,
         system::{Commands, Query, ResMut},
-    },
-    math::primitives::{Circle, Rectangle},
-    window::{MonitorSelection, PrimaryWindow, Window, WindowPosition},
+    }, math::{bounding::{Aabb2d, IntersectsVolume}, primitives::{Circle, Rectangle}}, platform::collections::HashSet, window::{MonitorSelection, PrimaryWindow, Window, WindowPosition}
 };
 
 use bevy::prelude::*;
 
 use crate::{
-    components::{Movable, Player, Velocity},
+    components::{Enemy, Movable, Player, Velocity},
     resource::{
-        BASE_SPEED, EnemySpawnTimer, GameAssets, GameMaterial, GameShapes, TIME_STEP, WindowSize,
+        EnemySpawnTimer, GameAssets, GameMaterial, GameShapes, WindowSize, BASE_SPEED, TIME_STEP
     },
 };
 pub struct SystemPlugin;
@@ -25,7 +20,7 @@ pub struct SystemPlugin;
 impl Plugin for SystemPlugin {
     fn build(&self, app: &mut bevy::app::App) {
         app.add_systems(Startup, (load_game_assets, setup_system).chain());
-        app.add_systems(Update, movement_system);
+        app.add_systems(Update, (movement_system, enemy_grab));
     }
 }
 
@@ -131,6 +126,26 @@ fn movement_system(
                 || translation.y > window_height_half + MARGIN
             {
                 commands.entity(entity).despawn();
+            }
+        }
+    }
+}
+
+fn enemy_grab(mut commands: Commands, player_query: Query<(Entity, &Transform), With<Player>>, enemy_query: Query<(Entity, &Transform), With<Enemy>>) {
+    let mut check_despawn: HashSet<Entity> = HashSet::new();
+    
+    for (enemy_entity, enemy_transform) in enemy_query.iter() {
+        if check_despawn.contains(&enemy_entity) { continue; }
+        
+        for (player_entity, player_transform) in player_query.iter() {
+            if check_despawn.contains(&player_entity) || check_despawn.contains(&enemy_entity) { continue; }
+
+            let collision = Aabb2d::new(enemy_transform.translation.truncate(), Vec2 { x: 40., y: 40. } / 2.)
+            .intersects(&Aabb2d::new(player_transform.translation.truncate(), Vec2 { x: 50., y: 30. } / 2.));
+
+            if collision {
+                commands.entity(enemy_entity).despawn();
+                check_despawn.insert(enemy_entity);
             }
         }
     }
