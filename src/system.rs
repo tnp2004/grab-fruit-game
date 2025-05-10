@@ -1,6 +1,8 @@
+use std::path::Path;
+
 use bevy::{
     app::{Plugin, Startup},
-    asset::Assets,
+    asset::{AssetPath, Assets},
     core_pipeline::{bloom::Bloom, tonemapping::Tonemapping},
     ecs::{
         query::With,
@@ -29,10 +31,10 @@ impl Plugin for SystemPlugin {
 
 fn load_game_assets(mut commands: Commands, asset_server: Res<AssetServer>) {
     let game_assets = GameAssets {
-        player: asset_server.load("player/basket.png"),
-        apple: asset_server.load("enemy/apple.png"),
-        durian: asset_server.load("enemy/durian.png"),
-        orange: asset_server.load("enemy/orange.png"),
+        basket: asset_server.load(AssetPath::from_path(Path::new("player/basket.png"))),
+        apple: asset_server.load(AssetPath::from_path(Path::new("enemy/apple.png"))),
+        durian: asset_server.load(AssetPath::from_path(Path::new("enemy/durian.png"))),
+        orange: asset_server.load(AssetPath::from_path(Path::new("enemy/orange.png"))),
     };
 
     commands.insert_resource(game_assets);
@@ -67,14 +69,14 @@ fn setup_system(
 
     let game_shapes = GameShapes {
         player_body: meshes.add(Rectangle::new(60., 60.)),
-        enemy_body: meshes.add(Circle::new(30.)),
+        enemy_body: meshes.add(Rectangle::new(50., 50.)),
     };
 
     commands.insert_resource(game_shapes);
 
     let game_material = GameMaterial {
         player: materials.add(ColorMaterial {
-            texture: Some(game_assets.player.clone()),
+            texture: Some(game_assets.basket.clone()),
             ..default()
         }),
         apple: materials.add(ColorMaterial {

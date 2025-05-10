@@ -30,7 +30,7 @@ pub struct GameMaterial {
 
 #[derive(Resource)]
 pub struct GameAssets {
-    pub player: Handle<Image>,
+    pub basket: Handle<Image>,
 
     pub apple: Handle<Image>,
     pub durian: Handle<Image>,
